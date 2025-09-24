@@ -1,0 +1,22 @@
+{
+  "functions": {
+    "app/api/evaluaciones/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/pacientes/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/generate-pdf/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/migrate/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/upload/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "PRISMA_SKIP_POSTINSTALL_GENERATE": "false"
+  }
+}
