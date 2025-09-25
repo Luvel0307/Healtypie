@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { evaluarRiesgo } from '@/lib/fuzzy-logic';
-import { getPrisma } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export const dynamic = "force-dynamic";
 
@@ -41,18 +41,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Buscar o crear paciente
-    let paciente = await (await getPrisma()).paciente.findFirst({
+    let paciente = await prisma.paciente.findFirst({
       where: { nombre: nombre.trim() }
     });
 
     if (!paciente) {
-      paciente = await (await getPrisma()).paciente.create({
+      paciente = await prisma.paciente.create({
         data: { nombre: nombre.trim() }
       });
     }
 
     // Obtener última evaluación para comparación
-    const ultimaEvaluacion = await (await getPrisma()).evaluacion.findFirst({
+    const ultimaEvaluacion = await prisma.evaluacion.findFirst({
       where: { pacienteId: paciente.id },
       orderBy: { fechaHora: 'desc' }
     });
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Crear nueva evaluación
-    const evaluacion = await (await getPrisma()).evaluacion.create({
+    const evaluacion = await prisma.evaluacion.create({
       data: {
         pacienteId: paciente.id,
         sensibilidad,
@@ -132,13 +132,13 @@ export async function GET(request: NextRequest) {
     let evaluaciones;
 
     if (pacienteId) {
-      evaluaciones = await (await getPrisma()).evaluacion.findMany({
+      evaluaciones = await prisma.evaluacion.findMany({
         where: { pacienteId: parseInt(pacienteId) },
         include: { paciente: true },
         orderBy: { fechaHora: 'desc' }
       });
     } else if (nombre) {
-      const paciente = await (await getPrisma()).paciente.findFirst({
+      const paciente = await prisma.paciente.findFirst({
         where: { nombre: nombre.trim() }
       });
 
@@ -146,13 +146,13 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ evaluaciones: [] });
       }
 
-      evaluaciones = await (await getPrisma()).evaluacion.findMany({
+      evaluaciones = await prisma.evaluacion.findMany({
         where: { pacienteId: paciente.id },
         include: { paciente: true },
         orderBy: { fechaHora: 'desc' }
       });
     } else {
-      evaluaciones = await (await getPrisma()).evaluacion.findMany({
+      evaluaciones = await prisma.evaluacion.findMany({
         include: { paciente: true },
         orderBy: { fechaHora: 'desc' },
         take: 50 // Límite para rendimiento

@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPrisma } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -47,12 +47,12 @@ export async function POST(request: NextRequest) {
         }
 
         // Buscar o crear paciente
-        let paciente = await (await getPrisma()).paciente.findFirst({
+        let paciente = await prisma.paciente.findFirst({
           where: { nombre: registro.Paciente }
         });
 
         if (!paciente) {
-          paciente = await (await getPrisma()).paciente.create({
+          paciente = await prisma.paciente.create({
             data: { nombre: registro.Paciente }
           });
         }
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Crear evaluación
-        const evaluacion = await (await getPrisma()).evaluacion.create({
+        const evaluacion = await prisma.evaluacion.create({
           data: {
             pacienteId: paciente.id,
             fechaHora: new Date(registro.FechaHora),

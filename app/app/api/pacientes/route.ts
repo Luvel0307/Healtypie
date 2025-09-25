@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPrisma } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     let pacientes;
 
     if (search) {
-      pacientes = await (await getPrisma()).paciente.findMany({
+      pacientes = await prisma.paciente.findMany({
         where: {
           nombre: {
             contains: search,
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         orderBy: { fechaActualizacion: 'desc' }
       });
     } else {
-      pacientes = await (await getPrisma()).paciente.findMany({
+      pacientes = await prisma.paciente.findMany({
         include: {
           evaluaciones: {
             orderBy: { fechaHora: 'desc' },
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar si el paciente ya existe
-    const pacienteExistente = await (await getPrisma()).paciente.findFirst({
+    const pacienteExistente = await prisma.paciente.findFirst({
       where: { nombre: nombre.trim() }
     });
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ya existe un paciente con ese nombre' }, { status: 400 });
     }
 
-    const paciente = await (await getPrisma()).paciente.create({
+    const paciente = await prisma.paciente.create({
       data: { nombre: nombre.trim() }
     });
 

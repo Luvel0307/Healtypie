@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getPrisma } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Obtener la evaluación con datos del paciente
-    const evaluacion = await (await getPrisma()).evaluacion.findUnique({
+    const evaluacion = await prisma.evaluacion.findUnique({
       where: { id: parseInt(evaluacionId) },
       include: { paciente: true }
     });
